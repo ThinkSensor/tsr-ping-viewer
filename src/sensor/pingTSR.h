@@ -17,11 +17,11 @@
  * 1D Sonar
  *
  */
-class Ping : public PingSensor {
+class PingTSR : public PingSensor {
     Q_OBJECT
 public:
-    Ping();
-    ~Ping();
+    PingTSR();
+    ~PingTSR();
 
     /**
      * @brief Add new connection
@@ -362,7 +362,7 @@ signals:
     ///@}
 
 private:
-    Q_DISABLE_COPY(Ping)
+    Q_DISABLE_COPY(PingTSR)
     /**
      * @brief Sensor variables
      */
@@ -387,9 +387,8 @@ private:
     bool _ping_enable;
     uint16_t _pcb_temperature;
     uint16_t _processor_temperature;
+    uint16_t _num_points = 1280;
     ///@}
-
-    static const uint16_t _num_points = 1280;
 
     /**
      * @brief The points received by the sensor
@@ -486,21 +485,21 @@ private:
      */
     QMap<QString, settingsConfiguration> _pingConfiguration {
         {{"1_pingInterval"},
-            {66, 20, 1000, std::bind(&Ping::ping_interval, this),
+            {66, 20, 1000, std::bind(&PingTSR::ping_interval, this),
                 [this](long long int value) { set_ping_interval(value); }}},
         {{"1_speedOfSound"},
-            {1500000, 50000, 10000000, std::bind(&Ping::speed_of_sound, this),
+            {1500000, 50000, 10000000, std::bind(&PingTSR::speed_of_sound, this),
                 [this](long long int value) { set_speed_of_sound(value); }}},
         {{"2_automaticMode"},
-            {true, false, true, std::bind(&Ping::mode_auto, this),
+            {true, false, true, std::bind(&PingTSR::mode_auto, this),
                 [this](long long int value) { set_mode_auto(value); }}},
         {{"3_gainIndex"},
-            {0, 0, 6, std::bind(&Ping::gain_setting, this), [this](long long int value) { set_gain_setting(value); }}},
+            {0, 0, 6, std::bind(&PingTSR::gain_setting, this), [this](long long int value) { set_gain_setting(value); }}},
         {{"3_lengthDistance"},
-            {5000, 500, 70000, std::bind(&Ping::length_mm, this),
+            {5000, 500, 70000, std::bind(&PingTSR::length_mm, this),
                 [this](long long int value) { set_length_mm(value); }}},
         {{"3_startDistance"},
-            {0, 0, 70000, std::bind(&Ping::start_mm, this), [this](long long int value) { set_start_mm(value); }}},
+            {0, 0, 70000, std::bind(&PingTSR::start_mm, this), [this](long long int value) { set_start_mm(value); }}},
     };
 
     struct messageStatus {
@@ -511,6 +510,6 @@ private:
         // Number of waiting replies
         int waiting = 0;
     };
-    friend QDebug operator<<(QDebug d, const Ping::messageStatus& other);
+    friend QDebug operator<<(QDebug d, const PingTSR::messageStatus& other);
     QHash<uint16_t, messageStatus> requestedIds;
 };

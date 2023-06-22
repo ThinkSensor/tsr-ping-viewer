@@ -3,6 +3,7 @@ add_library(
 STATIC
     hexvalidator.cpp
     ping.cpp
+    pingTSR.cpp
     ping360.cpp
     ping360helperservice.cpp
     ping360asciiprotocol.cpp

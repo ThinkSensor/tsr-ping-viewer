@@ -27,7 +27,10 @@ LinkConfiguration::LinkConfiguration(const QString& configurationString)
         _linkConf.deviceType = PingDeviceType::PING1D;
     } else if (deviceType == PingHelper::nameFromDeviceType(PingDeviceType::PING360)) {
         _linkConf.deviceType = PingDeviceType::PING360;
+    } else if (deviceType == PingHelper::nameFromDeviceType(PingDeviceType::PING1DTSR)) {
+        _linkConf.deviceType = PingDeviceType::PING1DTSR;
     }
+
     if (_linkConf.deviceType != PingDeviceType::UNKNOWN) {
         configurationStringList.removeFirst();
     }

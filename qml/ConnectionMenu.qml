@@ -89,6 +89,11 @@ Item {
                         deviceId: PingEnumNamespace.PingDeviceType.PING360
                     }
 
+                    ListElement {
+                        name: "Ping1DTSR"
+                        deviceId: PingEnumNamespace.PingDeviceType.PING1DTSR
+                    }
+
                 }
 
             }
@@ -166,8 +171,8 @@ Item {
                 ComboBox {
                     id: baudrateBox
 
-                    visible: deviceCB.model.get(deviceCB.currentIndex).deviceId == PingEnumNamespace.PingDeviceType.PING1D
-                    model: [115200, 9600]
+                    visible: deviceCB.model.get(((deviceCB.currentIndex).deviceId == PingEnumNamespace.PingDeviceType.PING1D)||((deviceCB.currentIndex).deviceId == PingEnumNamespace.PingDeviceType.PING1DTSR))
+                    model: [115200, 921600, 460800, 230400, 57600, 9600]
                 }
 
             }

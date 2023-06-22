@@ -122,6 +122,6 @@ private:
     LinkConfiguration _link;
     QString _message;
     States _state = Idle;
-    const QList<int> _validBaudRates = {57600, 115200, 230400};
+    const QList<int> _validBaudRates = {57600, 115200, 230400, 460800, 921600};
     bool _verify = true;
 };

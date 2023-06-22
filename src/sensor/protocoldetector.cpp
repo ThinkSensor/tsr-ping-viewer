@@ -250,10 +250,20 @@ bool ProtocolDetector::checkBuffer(const QByteArray& buffer, LinkConfiguration& 
             // TODO: Ping1D with firmware 3.26 or older
             // We should remove this code in future releases but allowing undetected devices to be flashed
             PingDeviceType type = static_cast<PingDeviceType>(device_information.device_type());
-            if (type == PingDeviceType::PING360) {
-                linkConf.setDeviceType(PingDeviceType::PING360);
-            } else {
-                linkConf.setDeviceType(PingDeviceType::PING1D);
+            switch( type )
+            {
+                case PingDeviceType::PING360:
+                    linkConf.setDeviceType(PingDeviceType::PING360);
+                    break;
+                case PingDeviceType::PING1D:
+                    linkConf.setDeviceType(PingDeviceType::PING1D);
+                    break;
+                case PingDeviceType::PING1DTSR:
+                    linkConf.setDeviceType(PingDeviceType::PING1DTSR);
+                    break;
+                default:
+                    linkConf.setDeviceType(PingDeviceType::PING1D);
+                    break;
             }
             return true;
         }

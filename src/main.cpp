@@ -6,7 +6,7 @@
 #include <QQuickStyle>
 #include <QRegularExpression>
 
-#if defined(QT_DEBUG) && defined(Q_OS_WIN)
+#if defined(HAVE_KCRASH) && defined(QT_DEBUG) && defined(Q_OS_WIN)
 #include <KCrash>
 #endif
 
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 
     StyleManager::self()->setQmlEngine(&engine);
 
-#if defined(QT_DEBUG) && defined(Q_OS_WIN)
+#if defined(HAVE_KCRASH) && defined(QT_DEBUG) && defined(Q_OS_WIN)
     // Start KCrash
     KCrash::initialize();
 #endif
