@@ -51,9 +51,33 @@ void Ping360HelperService::doBroadcast()
 {
     const QByteArray datagram = Ping360AsciiProtocol::discoveryMessage();
 
-    // Send discovery message as broadcast and for companion ip subnet
-    for (const QHostAddress& address : {QHostAddress {QHostAddress::Broadcast}, QHostAddress {"192.168.2.255"}}) {
-        _broadcastSocket.writeDatagram(datagram, address, Ping360AsciiProtocol::udpPort());
+    // Retrieve the IP addresses and their associated broadcast addresses
+    QList<QPair<QHostAddress, QHostAddress>> ipBroadcastAddresses;
+    QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
+    for (const QNetworkInterface& interface : interfaces) {
+        if (interface.flags().testFlag(QNetworkInterface::IsUp)
+            && !interface.flags().testFlag(QNetworkInterface::IsLoopBack)) {
+            QList<QNetworkAddressEntry> entries = interface.addressEntries();
+            for (const QNetworkAddressEntry& entry : entries) {
+                if (entry.ip().protocol() == QAbstractSocket::IPv4Protocol) {
+                    ipBroadcastAddresses.append(qMakePair(entry.ip(), entry.broadcast()));
+                }
+            }
+        }
+    }
+
+    // Send discovery message as broadcast for each interface's associated broadcast address
+    for (const QPair<QHostAddress, QHostAddress>& addressPair : ipBroadcastAddresses) {
+        const QHostAddress& ipAddress = addressPair.first;
+        const QHostAddress& broadcastAddress = addressPair.second;
+
+        if (_broadcastSocket.writeDatagram(datagram, broadcastAddress, Ping360AsciiProtocol::udpPort()) == -1) {
+            qDebug() << "Failed to send datagram to broadcast address:" << broadcastAddress.toString()
+                     << "for IP address:" << ipAddress.toString();
+        } else {
+            qDebug() << "Datagram sent successfully to broadcast address:" << broadcastAddress.toString()
+                     << "for IP address:" << ipAddress.toString();
+        }
     }
 }
 
@@ -77,7 +101,7 @@ void Ping360HelperService::processBroadcastResponses()
         const Ping360DiscoveryResponse decoded = Ping360AsciiProtocol::decodeDiscoveryResponse(datagram.data());
         if (decoded.deviceName.contains("PING360")) {
             emit availableLinkFound(
-                {{LinkType::Udp, {sender.toString(), "12345"}, "Ping360 Port", PingDeviceType::PING360}},
+                {{LinkType::Udp, {decoded.ipAddress, "12345"}, "Ping360 Port", PingDeviceType::PING360}},
                 QStringLiteral("Ping360 Ethernet Protocol Detector"));
         } else {
             qCWarning(PING360HELPERSERVICE) << "Invalid message:" << datagram.data();

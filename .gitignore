@@ -5,3 +5,4 @@ deploy/pingviewer.rc
 *.pro.user
 html/
 latex/
+lib/ping-cpp/ping-cpp
