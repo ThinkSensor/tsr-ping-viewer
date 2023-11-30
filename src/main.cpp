@@ -1,3 +1,4 @@
+#include "pingTSR.h"
 #include <QApplication>
 #include <QDebug>
 #include <QQmlApplicationEngine>
@@ -69,6 +70,7 @@ int main(int argc, char* argv[])
     qmlRegisterType<GradientScale>("GradientScale", 1, 0, "GradientScale");
     qmlRegisterType<LinkConfiguration>("LinkConfiguration", 1, 0, "LinkConfiguration");
     qmlRegisterType<Ping>("Ping", 1, 0, "Ping");
+    qmlRegisterType<PingTSR>("PingTSR", 1, 0, "PingTSR");
     qmlRegisterType<Ping360>("Ping360", 1, 0, "Ping360");
     qmlRegisterType<PolarPlot>("PolarPlot", 1, 0, "PolarPlot");
     qmlRegisterType<WaterfallPlot>("WaterfallPlot", 1, 0, "WaterfallPlot");

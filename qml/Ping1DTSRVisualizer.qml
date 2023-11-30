@@ -32,6 +32,12 @@ Item {
         readout.confidence = perc;
     }
 
+    function setGPSCoordinates( latitude, longitude )
+    {
+        readout.latitude = latitude;
+        readout.longitude = longitude;
+    }
+
     function confidenceToColor(confidence) {
         return Qt.rgba(2 * (1 - confidence / 100), 2 * confidence / 100, 0);
     }
@@ -71,6 +77,7 @@ Item {
         }
         onDistanceChanged: {
             root.setDepth(ping.distance / 1000);
+            root.setGPSCoordinates(49.26282890879325, -122.91793821362361);
         }
         onConfidenceChanged: {
             root.setConfidence(ping.confidence);

@@ -389,7 +389,7 @@ private:
     uint16_t _processor_temperature;
     ///@}
 
-    static const uint16_t _num_points = 1280;
+    static const uint16_t _num_points = 8192;  // was 200
 
     /**
      * @brief The points received by the sensor

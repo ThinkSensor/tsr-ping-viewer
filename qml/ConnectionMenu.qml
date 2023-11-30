@@ -172,7 +172,7 @@ Item {
                     id: baudrateBox
 
                     visible: deviceCB.model.get(((deviceCB.currentIndex).deviceId == PingEnumNamespace.PingDeviceType.PING1D)||((deviceCB.currentIndex).deviceId == PingEnumNamespace.PingDeviceType.PING1DTSR))
-                    model: [115200, 921600, 460800, 230400, 57600, 9600]
+                    model: [921600, 460800, 230400, 115200, 57600]
                 }
 
             }

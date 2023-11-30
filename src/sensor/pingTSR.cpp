@@ -28,8 +28,8 @@ const int PingTSR::_pingMaxFrequency = 50;
 const bool PingTSR::_firmwareDefaultAutoMode = true;
 const int PingTSR::_firmwareDefaultGainSetting = 1;
 const bool PingTSR::_firmwareDefaultPingEnable = true;
-const uint16_t PingTSR::_firmwareDefaultPingInterval = 250;
-const uint32_t PingTSR::_firmwareDefaultSpeedOfSound = 1500000;
+const uint16_t PingTSR::_firmwareDefaultPingInterval = 66;
+const uint32_t PingTSR::_firmwareDefaultSpeedOfSound = 1500;
 
 PingTSR::PingTSR()
     : PingSensor(PingDeviceType::PING1DTSR)
@@ -40,7 +40,7 @@ PingTSR::PingTSR()
     setSensorVisualizer({"qrc:/Ping1DTSRVisualizer.qml"});
     setSensorStatusModel({"qrc:/Ping1DTSRStatusModel.qml"});
 
-    _periodicRequestTimer.setInterval(1000);
+    _periodicRequestTimer.setInterval(2000);
     connect(&_periodicRequestTimer, &QTimer::timeout, this, [this] {
         if (!link()->isWritable()) {
             qCWarning(PING_PROTOCOL_PINGTSR) << "Can't write in this type of link.";
@@ -146,10 +146,18 @@ void PingTSR::connectLink(LinkType connType, const QStringList& connString)
 
 void PingTSR::handleMessage(const ping_message& msg)
 {
-    qCDebug(PING_PROTOCOL_PINGTSR) << QStringLiteral("Handling Message: %1 [%2]")
+    uint16_t tPayloadVal = 0xFFFF;
+    if ( msg.message_id() == 1 )
+    {
+        ping1d_ack m(msg);
+        tPayloadVal = m.ack_message_id();
+    }
+
+    qCDebug(PING_PROTOCOL_PINGTSR) << QStringLiteral("Handling Message: %1 [%2] [%3]")
                                        .arg(PingHelper::nameFromMessageId(
                                            static_cast<PingEnumNamespace::PingMessageId>(msg.message_id())))
-                                       .arg(msg.message_id());
+                                       .arg(msg.message_id())
+                                       .arg(tPayloadVal);
 
     auto& requestedId = requestedIds[msg.message_id()];
     if (requestedId.waiting) {
@@ -212,6 +220,7 @@ void PingTSR::handleMessage(const ping_message& msg)
         // This is necessary to convert <uint8_t> to <int>
         // QProperty only supports vector<int>, otherwise, we could use memcpy, like the two lines above
         _points.resize(m.profile_data_length());
+        _num_points = m.profile_data_length();
         for (int i = 0; i < m.profile_data_length(); i++) {
             _points.replace(i, m.profile_data()[i] / 65535.0);
         }

@@ -12,6 +12,8 @@ Item {
     property real precision: 2
     property int margin: 10
     property real confidence: 0
+    property real latitude: 0.0
+    property real longitude: 0.0
     property int parentWidth: 0
     property int parentHeight: 0
     property var _POSITION: Object.freeze({

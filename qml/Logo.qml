@@ -18,7 +18,7 @@ ApplicationWindow {
     Image {
         id: image
 
-        source: "/imgs/br_logo.png"
+        source: "/imgs/TSR_Logo_final_transparent.png"
         fillMode: Image.PreserveAspectFit
         mipmap: true
         opacity: 0
