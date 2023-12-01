@@ -134,6 +134,21 @@ Item {
                 anchors.margins: 0
             }
 
+            Text {
+                id: locationText
+                x: readout.width - width + 180
+                y: readout.height * 4 / 5 + 20
+                text: "Location: " + latitude.toFixed(5) + " N " + longitude.toFixed(5) + " W"
+                visible: true
+                color: confidenceToColor(confidence)
+                font.family: "Arial"
+                font.pointSize: readout.font.pointSize / 3
+                font.bold: true
+                style: Text.Outline
+                styleColor: "black"
+                anchors.margins: 0
+            }
+
         }
 
     }
