@@ -11,6 +11,7 @@ import SettingsManager 1.0
 import StyleManager 1.0
 import Util 1.0
 import WaterfallPlot 1.0
+import GPSLocation 1.0
 
 Item {
     id: root
@@ -32,10 +33,11 @@ Item {
         readout.confidence = perc;
     }
 
-    function setGPSCoordinates( latitude, longitude )
+    function setGPSCoordinates( latitude, longitude, altitude )
     {
         readout.latitude = latitude;
         readout.longitude = longitude;
+        readout.altitude = altitude;
     }
 
     function confidenceToColor(confidence) {
@@ -77,7 +79,7 @@ Item {
         }
         onDistanceChanged: {
             root.setDepth(ping.distance / 1000);
-            root.setGPSCoordinates(49.26282890879325, -122.91793821362361);
+            root.setGPSCoordinates(GPSLocation.latitude, GPSLocation.longitude, GPSLocation.altitude);
         }
         onConfidenceChanged: {
             root.setConfidence(ping.confidence);

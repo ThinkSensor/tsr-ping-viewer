@@ -1,4 +1,3 @@
-#include "pingTSR.h"
 #include <QApplication>
 #include <QDebug>
 #include <QQmlApplicationEngine>
@@ -22,12 +21,17 @@
 #include "notificationmanager.h"
 #include "ping.h"
 #include "ping360.h"
+#include "pingTSR.h"
 #include "ping360helperservice.h"
 #include "polarplot.h"
 #include "settingsmanager.h"
 #include "stylemanager.h"
 #include "util.h"
 #include "waterfallplot.h"
+#include "gpslocation.h"
+#include "gpsreader.h"
+
+GPSReaderThread GPSReader;
 
 Q_DECLARE_LOGGING_CATEGORY(mainCategory)
 
@@ -63,6 +67,9 @@ int main(int argc, char* argv[])
     qmlRegisterSingletonType<StyleManager>("StyleManager", 1, 0, "StyleManager", StyleManager::qmlSingletonRegister);
     qmlRegisterSingletonType<Util>("Util", 1, 0, "Util", Util::qmlSingletonRegister);
 
+    QScopedPointer<GPSLocation> gps(new class GPSLocation);
+    qmlRegisterSingletonInstance("GPSLocation", 1, 0, "GPSLocation", gps.get());
+
     // Normal register
     qmlRegisterUncreatableType<AbstractLink>(
         "AbstractLink", 1, 0, "AbstractLink", "Link abstraction class can't be created.");
@@ -91,6 +98,35 @@ int main(int argc, char* argv[])
     CommandLineParser parser(app);
 
     QQmlApplicationEngine engine;
+
+    GPSReader.start(QThread::TimeCriticalPriority);
+
+    QObject::connect(&GPSReader, &GPSReaderThread::messageReceived, [&](const QString &message)
+        {
+            //qCDebug(mainCategory) << "GPS Received message:" << message;
+            gps->settime( GPSReader.getUTC());
+            gps->setlatitude( GPSReader.getLatitude());
+            gps->setlongitude( GPSReader.getLongitude());
+            gps->setaltitude( GPSReader.getAltitude());
+            gps->setHDOP( GPSReader.getHDOP());
+            gps->setGeoidSeparation( GPSReader.getGeoidSeparation());
+            gps->setReferenceID( GPSReader.getReferenceId());
+            gps->setquality( GPSReader.getQuality());
+            gps->setsatellites( GPSReader.getSatellites());
+
+            qCDebug(mainCategory) << "Position: " << GPSReader.getPositionString();
+        }
+    );
+
+    const QString portName = "COM6";
+    qint32 baudRate = 38400;
+
+    if (GPSReader.open(portName, baudRate))
+    {
+        qCDebug(mainCategory) << "GPS Serial port opened successfully";
+    } else {
+        qCWarning(mainCategory) << "GPS Failed to open serial port: " + portName;
+    }
 
     // Load the QML and set the Context
     // Logo

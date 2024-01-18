@@ -11,6 +11,9 @@
 #include <ping-message-common.h>
 #include <ping-message-ping1d.h>
 #include <ping-message.h>
+#include "gpsreader.h"
+
+extern GPSReaderThread GPSReader;
 
 /**
  * @brief Define ping 1D TSR sensor
@@ -275,6 +278,40 @@ public:
     Q_PROPERTY(int speed_of_sound READ speed_of_sound WRITE set_speed_of_sound NOTIFY speedOfSoundChanged)
 
     /**
+     * @brief Get the gps location
+     *
+     * @return GPSLocationType
+     */
+    GPSLocationType location() { return _location; }
+
+    /**
+     * @brief Set speed of sound (mm/s) used for calculating distance from time-of-flight
+     *
+     * @param set_location
+     */
+    void set_location(const GPSLocationType& gps)
+    {
+        if ( gps.quality != 0 )
+        {
+            ping1d_set_location m;
+            m.set_time(gps.time);
+            m.set_latitude(gps.latitude);
+            m.set_longitude(gps.longitude);
+            m.set_altitude(gps.altitude);
+            m.set_HDOP(gps.HDOP);
+            m.set_GeoidSeparation(gps.GeoidSeparation);
+            m.set_referenceid(gps.ReferenceID);
+            m.set_quality(gps.quality);
+            m.set_satellites(gps.satellites);
+            m.updateChecksum();
+            writeMessage(m);
+            // Don't need to read it back as we just get what we sent.
+            //request(CommonId::LOCATION);
+        }
+    }
+    Q_PROPERTY(GPSLocationType set_location READ location WRITE set_location NOTIFY locationChanged)
+
+    /**
      * @brief Get the processor temperature (centi-degrees C)
      *
      * @return uint16_t
@@ -355,6 +392,7 @@ signals:
     void pingEnableChanged();
     void pingIntervalChanged();
     void speedOfSoundChanged();
+    void locationChanged();
 
     void boardVoltageChanged();
     void pcbTemperatureChanged();
@@ -388,6 +426,7 @@ private:
     uint16_t _pcb_temperature;
     uint16_t _processor_temperature;
     uint16_t _num_points = 8000;
+    GPSLocationType _location;
     ///@}
 
     /**

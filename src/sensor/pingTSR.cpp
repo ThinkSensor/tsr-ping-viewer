@@ -65,6 +65,10 @@ PingTSR::PingTSR()
         request(Ping1dId::PROCESSOR_TEMPERATURE);
         request(Ping1dId::VOLTAGE_5);
         request(Ping1dId::MODE_AUTO);
+        request(Ping1dId::SET_LOCATION);
+
+        set_location( GPSReader.getLocation() );
+
     });
 
     // connectLink(LinkType::Serial, {"/dev/ttyUSB2", "115200"});
@@ -233,6 +237,15 @@ void PingTSR::handleMessage(const ping_message& msg)
         emit scanLengthChanged();
         emit gainSettingChanged();
         emit pointsChanged();
+    } break;
+
+    case Ping1dId::LOCATION: {
+        char message[512];
+        ping1d_set_location m(msg);
+        m.getMessageAsString(message,512);
+        qCDebug(PING_PROTOCOL_PINGTSR) << "LOCATION: " << message;
+        emit locationChanged();
+
     } break;
 
     case Ping1dId::MODE_AUTO: {

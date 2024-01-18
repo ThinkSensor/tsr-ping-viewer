@@ -11,6 +11,8 @@ STATIC
     pingsensor.cpp
     protocoldetector.cpp
     sensor.cpp
+    gpsreader.cpp
+    gpslocation.cpp
     parser.h # for the moc.
 )
 
