@@ -76,7 +76,9 @@ class PingViewerLogReader:
     #  should we use this instead??
     # longest possible ping message (id:2310) w/ 1200 samples
     #  -> double the length in case windows used UTF-16
-    MAX_ARRAY_LENGTH = 1220*2
+    #MAX_ARRAY_LENGTH = 1220*2
+    # ping1dTSR can send much larger messages
+    MAX_ARRAY_LENGTH = 262144+12
     # timestamp format for recovery hh:mm:ss.xxx
     # includes optional \x00 (null byte) before every character because Windows
     TIMESTAMP_FORMAT = re.compile(
@@ -192,7 +194,7 @@ class PingViewerLogReader:
                 except struct.error:
                     break # reading complete
 
-    def parser(self, message_ids: Set[int] = {1300, 2300, 2301}):
+    def parser(self, message_ids: Set[int] = {1300, 1302, 2300, 2301}):
         """ Returns a generator that parses and decodes this log's messages.
 
         Yields (timestamp, message) pairs. message decoded as a PingMessage.

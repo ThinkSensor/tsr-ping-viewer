@@ -65,7 +65,7 @@ PingTSR::PingTSR()
         request(Ping1dId::PROCESSOR_TEMPERATURE);
         request(Ping1dId::VOLTAGE_5);
         request(Ping1dId::MODE_AUTO);
-        request(Ping1dId::SET_LOCATION);
+        //request(Ping1dId::SET_LOCATION);
 
         set_location( GPSReader.getLocation() );
 

@@ -6,3 +6,7 @@ deploy/pingviewer.rc
 html/
 latex/
 lib/ping-cpp/ping-cpp
+*.zip
+heob*.exe
+qml/imgs/TSR*.*
+examples/decode*.txt
