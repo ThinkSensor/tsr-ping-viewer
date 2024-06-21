@@ -8,6 +8,7 @@ STATIC
     logsensorstruct.cpp
     ping1dsimulationlink.cpp
     ping360simulationlink.cpp
+    ping1dtsrsimulationlink.cpp
     processlog.cpp
     sensorinfo.cpp
     seriallink.cpp

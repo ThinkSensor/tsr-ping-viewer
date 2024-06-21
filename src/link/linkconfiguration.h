@@ -271,7 +271,8 @@ public:
     Q_INVOKABLE bool isSimulation() const
     {
         return _linkConf.type == AbstractLinkNamespace::Ping1DSimulation
-            || _linkConf.type == AbstractLinkNamespace::Ping360Simulation;
+            || _linkConf.type == AbstractLinkNamespace::Ping360Simulation
+            || _linkConf.type == AbstractLinkNamespace::Ping1DTSRSimulation;
     };
 
     /**
@@ -294,6 +295,8 @@ public:
             return QStringLiteral("Ping1D Simulation");
         case LinkType::Ping360Simulation:
             return QStringLiteral("Ping360 Simulation");
+        case LinkType::Ping1DTSRSimulation:
+            return QStringLiteral("Ping1DTSR Simulation");
         default:
             return QStringLiteral("Unknown");
         }

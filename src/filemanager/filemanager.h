@@ -29,6 +29,7 @@ public:
         Pictures,
         PingDocuments,
         SensorLog,
+        Config,
     };
     Q_ENUM(Folder)
 
@@ -47,6 +48,14 @@ public:
      * @return QString
      */
     Q_INVOKABLE QString createFileName(FileManager::Folder folderType);
+
+    /**
+     * @brief Return filename from type of file
+     *
+     * @param folderType
+     * @return QString
+     */
+    Q_INVOKABLE QString createSimpleFileName(FileManager::Folder folderType, QString fileName);
 
     /**
      * @brief Get the files from folder
@@ -124,6 +133,7 @@ private:
     FolderStruct _guiLogDir;
     FolderStruct _picturesDir;
     FolderStruct _sensorLogDir;
+    FolderStruct _configDir;
 
     /**
      * @brief Manage all folders access
@@ -135,6 +145,7 @@ private:
         {Pictures, &_picturesDir},
         {PingDocuments, &_docDir},
         {SensorLog, &_sensorLogDir},
+        {Config, &_configDir},
     };
 
     /**
@@ -144,6 +155,7 @@ private:
     const QMap<FileType, FolderStruct*> fileTypeFolder {
         {TXT, &_gradientsDir},
         {TXT, &_guiLogDir},
+        {TXT, &_configDir},
         {PICTURE, &_picturesDir},
         {BINARY, &_sensorLogDir},
     };

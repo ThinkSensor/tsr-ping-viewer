@@ -23,39 +23,27 @@ ColumnLayout {
         ColumnLayout {
             spacing: 5
             width: parent.width
+            
+            PingSlider {
+                id: pingHzSlider
 
-            RowLayout {
-                spacing: 5
+                Layout.fillWidth: true
+                text: "Frequency (Hz)"
+                from: 0
+                to: SettingsManager.debugMode ? ping.pingMaxFrequency : 30
 
-                PingButton {
-                    text: "Emit Ping"
-                    //requestEchosounderProfile
-                    onClicked: ping.emitPing()
+                Binding {
+                    target: ping
+                    property: "pingFrequency"
+                    value: pingHzSlider.modelValue
                 }
-
-                Slider {
-                    id: pingHzSlider
-
-                    from: 0
-                    stepSize: 1
-                    to: SettingsManager.debugMode ? ping.pingMaxFrequency : 30
+                Binding {
+                    target: pingHzSlider
+                    property: "modelValue"
                     value: ping.pingFrequency
-                    Layout.fillWidth: true
-                    onValueChanged: {
-                        if (ping.pingFrequency !== value)
-                            ping.pingFrequency = value;
-
-                    }
                 }
-
-                Text {
-                    id: pingPerSecond
-
-                    text: Math.round(ping.pingFrequency) + " ping/s"
-                    color: Material.primary
-                }
-
             }
+
 
             RowLayout {
                 spacing: 2
@@ -159,7 +147,7 @@ ColumnLayout {
                     id: gainCB
 
                     currentIndex: ping.gain_setting ? ping.gain_setting : 0
-                    model: [1, 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+                    model: [-4.4, 5.2, 14.8, 22.2, 29.6, 36.4, 43.2]
                     enabled: !autoGainChB.checked
                     Layout.columnSpan: 1
                     onCurrentIndexChanged: {
@@ -176,8 +164,7 @@ ColumnLayout {
                 // Sensor max range is limited to maxDepthMm
                 // The minimum range between start and length is minLengthMm
 
-                //property var maxDepthMm: SettingsManager.debugMode ? 1e+06 : 50000
-                property var maxDepthMm: 1000000
+                property var maxDepthMm: SettingsManager.debugMode ? 1e+06 : 50000
                 property var minLengthMm: 1000
 
                 function setDepth(startMm, lengthMm) {

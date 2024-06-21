@@ -118,8 +118,31 @@ int main(int argc, char* argv[])
         }
     );
 
-    const QString portName = "COM6";
-    qint32 baudRate = 38400;
+    QString portName = "COM0"; // "COM6";
+    qint32 baudRate  = 4800;   // 38400;
+
+    QString tmpPath = FileManager::self()->createSimpleFileName(FileManager::Config, QStringLiteral("GPS"));
+    QFile configFile(tmpPath);
+    if (!configFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "Error opening config file: " << configFile.errorString();
+    } else {
+        QTextStream in(&configFile);
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+            QStringList parts = line.split(':', Qt::SkipEmptyParts);
+            if (parts.size() == 2) {
+                QString token = parts[0].trimmed();
+                QString value = parts[1].trimmed();
+                if (token==QStringLiteral("Baud"))
+                    baudRate = value.toInt();
+                else if (token==QStringLiteral("Port")) {
+                    portName = value;
+                }
+            }
+        }
+    configFile.close();
+    }
+
 
     if (GPSReader.open(portName, baudRate))
     {

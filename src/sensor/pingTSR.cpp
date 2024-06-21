@@ -154,14 +154,14 @@ void PingTSR::handleMessage(const ping_message& msg)
     if ( msg.message_id() == 1 )
     {
         ping1d_ack m(msg);
-        tPayloadVal = m.ack_message_id();
+        //tPayloadVal = m.ack_message_id();
     }
 
     qCDebug(PING_PROTOCOL_PINGTSR) << QStringLiteral("Handling Message: %1 [%2] [%3]")
                                        .arg(PingHelper::nameFromMessageId(
                                            static_cast<PingEnumNamespace::PingMessageId>(msg.message_id())))
                                        .arg(msg.message_id())
-                                       .arg(tPayloadVal);
+                                       .arg(msg.payload_length());
 
     auto& requestedId = requestedIds[msg.message_id()];
     if (requestedId.waiting) {
@@ -223,10 +223,22 @@ void PingTSR::handleMessage(const ping_message& msg)
 #pragma omp for
         // This is necessary to convert <uint8_t> to <int>
         // QProperty only supports vector<int>, otherwise, we could use memcpy, like the two lines above
-        _points.resize(m.profile_data_length());
         _num_points = m.profile_data_length();
-        for (int i = 0; i < m.profile_data_length(); i++) {
-            _points.replace(i, m.profile_data()[i] / 65535.0);
+
+        qCDebug(PING_PROTOCOL_PINGTSR) << "Points #: " << _num_points;
+
+        if (_num_points != _points.size())
+            _points.resize(_num_points);
+
+        int i;
+        double pvalue = 0;
+        try {
+            for (i = 0; i < _num_points; i++) {
+                pvalue = m.profile_data()[i] / 65535.0;
+                _points.replace(i, pvalue);
+            }
+        } catch(...) {
+            qCDebug(PING_PROTOCOL_PINGTSR) << "Error: i = " << i << ", point = " << pvalue;
         }
 
         emit distanceChanged();

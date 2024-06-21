@@ -7,6 +7,7 @@
 #include "logger.h"
 #include "ping1dsimulationlink.h"
 #include "ping360simulationlink.h"
+#include "ping1dtsrsimulationlink.h"
 #include "seriallink.h"
 #include "simulationlink.h"
 #include "tcplink.h"
@@ -37,6 +38,9 @@ Link::Link(LinkType linkType, QString name, QObject* parent)
     case LinkType::Ping360Simulation:
         _abstractLink.reset(new Ping360SimulationLink());
         break;
+    case LinkType::Ping1DTSRSimulation:
+        _abstractLink.reset(new Ping1DTSRSimulationLink());
+        break;
     default:
         qCritical(PING_PROTOCOL_LINK) << "Link not available!";
         return;
@@ -65,6 +69,9 @@ Link::Link(const LinkConfiguration& linkConfiguration, QObject* parent)
         break;
     case LinkType::Ping360Simulation:
         _abstractLink.reset(new Ping360SimulationLink());
+        break;
+    case LinkType::Ping1DTSRSimulation:
+        _abstractLink.reset(new Ping1DTSRSimulationLink());
         break;
     default:
         qCDebug(PING_PROTOCOL_LINK) << "Link not available!";

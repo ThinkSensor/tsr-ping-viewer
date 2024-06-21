@@ -14,6 +14,7 @@ FileManager::FileManager()
     , _guiLogDir(_fmDir.dir.filePath(QStringLiteral("Gui_Log")), fileTypeExtension[TXT])
     , _picturesDir(_fmDir.dir.filePath(QStringLiteral("Pictures")), fileTypeExtension[PICTURE])
     , _sensorLogDir(_fmDir.dir.filePath(QStringLiteral("Sensor_Log")), fileTypeExtension[BINARY])
+    , _configDir(_fmDir.dir.filePath(QStringLiteral("Config")), fileTypeExtension[TXT])
 {
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 
@@ -83,6 +84,18 @@ QString FileManager::createFileName(FileManager::Folder folderType)
     return result;
 }
 
+QString FileManager::createSimpleFileName(FileManager::Folder folderType, QString fileName)
+{
+    FolderStruct* folder = folderMap[folderType];
+    if (!folder) {
+        qCWarning(FILEMANAGER) << "Folder pointer does not exist!";
+        return {};
+    }
+    QString path = folder->dir.path();
+    QString result = path + "/" + fileName + folder->extension;
+    qCDebug(FILEMANAGER) << "Creating file name:" << result;
+    return result;
+}
 FileManager* FileManager::self()
 {
     static FileManager self;

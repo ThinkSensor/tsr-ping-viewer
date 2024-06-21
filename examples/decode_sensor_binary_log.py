@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
-import struct, sys, re
+import struct
+import sys
+import re
+from brping import PingParser, PingMessage
+from dataclasses import dataclass
+from typing import IO, Any, Set
 
 # 3.7 for dataclasses, 3.8 for walrus (:=) in recovery
 assert (sys.version_info.major >= 3 and sys.version_info.minor >= 8), \
     "Python version should be at least 3.8."
-
-from brping import PingParser, PingMessage
-from dataclasses import dataclass
-from typing import IO, Any, Set
 
 
 def indent(obj, by=' '*4):
@@ -76,7 +77,7 @@ class PingViewerLogReader:
     #  should we use this instead??
     # longest possible ping message (id:2310) w/ 1200 samples
     #  -> double the length in case windows used UTF-16
-    #MAX_ARRAY_LENGTH = 1220*2
+    # MAX_ARRAY_LENGTH = 1220*2
     # ping1dTSR can send much larger messages
     MAX_ARRAY_LENGTH = 262144+12
     # timestamp format for recovery hh:mm:ss.xxx
@@ -130,7 +131,8 @@ class PingViewerLogReader:
         read until the next timestamp, and continue as normal from there.
 
         """
-        # TODO: log when recovery attempts occur, and bytes lost when they succeed
+        # TODO: log when recovery attempts occur,
+        #       and bytes lost when they succeed
         file.seek(current_pos := (file.tell() - cls.UINT.size))
         prev_ = next_ = b''
         start = amount_read = 0
@@ -139,7 +141,7 @@ class PingViewerLogReader:
             prev_ = next_
             next_ = file.read(cls.MAX_ARRAY_LENGTH)
             if not next_:
-                break # run out of file
+                break  # run out of file
             amount_read += cls.MAX_ARRAY_LENGTH
             if start == 0 and prev_:
                 # onto the second read
@@ -192,7 +194,7 @@ class PingViewerLogReader:
                 try:
                     yield self.unpack_message(file)
                 except struct.error:
-                    break # reading complete
+                    break  # reading complete
 
     def parser(self, message_ids: Set[int] = {1300, 1302, 2300, 2301}):
         """ Returns a generator that parses and decodes this log's messages.
@@ -216,7 +218,7 @@ class PingViewerLogReader:
                     decoded_message = self._parser.rx_msg
                     if decoded_message.message_id in message_ids:
                         yield timestamp, decoded_message
-                        break # this message is (should be?) over, get next one
+                        break  # this should be over, get next one
                 # else message is still being parsed
 
 
@@ -233,9 +235,9 @@ class Ping1DSettings:
 
     @property
     def gain(self):
-        """ Returns device receiver 'gain', as specified by 
+        """ Returns device receiver 'gain', as specified by
         https://docs.bluerobotics.com/ping-protocol/pingmessage-ping1d/#1300-profile.
-        
+
         """
         assert 0 <= self.gain_setting <= 6, "Invalid gain value."
         return (0.6, 1.8, 5.5, 12.9, 30.2, 66.1, 144)[self.gain_setting]
@@ -264,7 +266,7 @@ class Ping360Settings:
         """ Returns device sample period in microseconds. """
         assert 80 <= self.sample_period <= 40_000, "Invalid sample period."
         return self.sample_period * 25e-3
-    
+
     def meters_per_sample(self, v_sound):
         """ Returns the distance [m] covered by each sample of a ping.
 
@@ -302,5 +304,5 @@ if __name__ == "__main__":
         print('timestamp:', repr(timestamp))
         print(decoded_message)
         # uncomment to confirm continuing after each message is printed
-        #out = input('q to quit, enter to continue: ')
-        #if out.lower() == 'q': break
+        # out = input('q to quit, enter to continue: ')
+        # if out.lower() == 'q': break

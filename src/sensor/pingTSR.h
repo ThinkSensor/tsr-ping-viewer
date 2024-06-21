@@ -425,7 +425,7 @@ private:
     bool _ping_enable;
     uint16_t _pcb_temperature;
     uint16_t _processor_temperature;
-    uint16_t _num_points = 8000;
+    uint16_t _num_points = 0;
     GPSLocationType _location;
     ///@}
 

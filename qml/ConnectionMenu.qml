@@ -38,6 +38,7 @@ Item {
                 break;
             case AbstractLinkNamespace.Ping1DSimulation:
             case AbstractLinkNamespace.Ping360Simulation:
+            case AbstractLinkNamespace.Ping1DTSRSimulation:
                 conntype.currentIndex = 2;
                 udpLayout.enabled = false;
                 serialLayout.enabled = false;
@@ -250,6 +251,8 @@ Item {
                         // Simulation
                         if (connectionDevice == PingEnumNamespace.PingDeviceType.PING1D)
                             connectionType = AbstractLinkNamespace.Ping1DSimulation;
+                        else if (connectionDevice == PingEnumNamespace.PingDeviceType.PING1DTSR)
+                            connectionType = AbstractLinkNamespace.Ping1DTSRSimulation;
                         else
                             connectionType = AbstractLinkNamespace.Ping360Simulation;
                         connectionConf = [" ", " "];
